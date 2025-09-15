@@ -8,6 +8,9 @@ import '../../../core/routes/app_routes.dart';
 import '../../../data/models/vehicle_model.dart';
 import '../../../data/models/fuel_record_model.dart';
 import '../../../data/models/fuel_type.dart';
+import '../../widgets/cards/info_card.dart';
+import '../../widgets/states/empty_state.dart';
+import '../../../core/widgets/app_logo.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -64,12 +67,18 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text(
-          AppStrings.dashboard,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
+        title: Row(
+          children: [
+            AppIcon(size: 32),
+            SizedBox(width: 12),
+            Text(
+              AppStrings.dashboard,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+              ),
+            ),
+          ],
         ),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
@@ -159,43 +168,13 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(AppDimensions.paddingLarge),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.directions_car,
-              size: 80,
-              color: AppColors.textSecondary,
-            ),
-            SizedBox(height: AppDimensions.spacingLarge),
-            Text(
-              AppStrings.noVehicles,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            SizedBox(height: AppDimensions.spacingSmall),
-            Text(
-              AppStrings.addFirstVehicle,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.textSecondary,
-              ),
-            ),
-            SizedBox(height: AppDimensions.spacingLarge),
-            ElevatedButton.icon(
-              onPressed: _addVehicle,
-              icon: Icon(Icons.add),
-              label: Text(AppStrings.addVehicle),
-            ),
-          ],
-        ),
-      ),
+    return EmptyState(
+      icon: Icons.directions_car_outlined,
+      title: AppStrings.noVehicles,
+      subtitle: AppStrings.addFirstVehicle,
+      buttonText: AppStrings.addVehicle,
+      onButtonPressed: _addVehicle,
+      iconColor: AppColors.primary,
     );
   }
 
@@ -365,57 +344,12 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildMetricCard(String title, String value, Color color, IconData icon) {
-    return Container(
-      padding: EdgeInsets.all(AppDimensions.paddingMedium),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-        border: Border.all(color: color.withValues(alpha: 0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 6,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: color, size: 18),
-              ),
-              SizedBox(width: AppDimensions.spacingSmall),
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: AppDimensions.spacingSmall),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ],
-      ),
+    return InfoCard(
+      title: title,
+      value: value,
+      icon: icon,
+      color: color,
+      isCompact: false,
     );
   }
 

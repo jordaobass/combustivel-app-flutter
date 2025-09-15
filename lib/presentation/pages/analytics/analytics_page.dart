@@ -75,8 +75,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                   SizedBox(height: AppDimensions.spacingLarge),
                   _buildMetricsOverview(records),
                   SizedBox(height: AppDimensions.spacingLarge),
-                  _buildConsumptionChart(records),
-                  SizedBox(height: AppDimensions.spacingLarge),
                   _buildSpendingChart(records),
                   SizedBox(height: AppDimensions.spacingLarge),
                   _buildFuelTypeAnalysis(records),
@@ -328,80 +326,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
     );
   }
 
-  Widget _buildConsumptionChart(List<FuelRecord> records) {
-    List<FlSpot> spots = [];
-
-    for (int i = 1; i < records.length; i++) {
-      if (records[i].vehicleId == records[i-1].vehicleId && records[i].isFullTank) {
-        final consumption = records[i].calculateConsumption(records[i-1].odometer);
-        if (consumption != null) {
-          spots.add(FlSpot(i.toDouble(), consumption));
-        }
-      }
-    }
-
-    if (spots.isEmpty) {
-      return Card(
-        child: Container(
-          height: 200,
-          child: Center(
-            child: Text(
-              'Dados insuficientes para gráfico de consumo',
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(AppDimensions.paddingMedium),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Evolução do Consumo',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            SizedBox(height: AppDimensions.spacingMedium),
-            Container(
-              height: 200,
-              child: LineChart(
-                LineChartData(
-                  gridData: FlGridData(show: true),
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: true, reservedSize: 40),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  ),
-                  borderData: FlBorderData(show: true),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: spots,
-                      isCurved: true,
-                      color: AppColors.primary,
-                      barWidth: 3,
-                      dotData: FlDotData(show: true),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildSpendingChart(List<FuelRecord> records) {
     // Agrupar por mês

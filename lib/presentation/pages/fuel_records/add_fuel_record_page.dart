@@ -26,7 +26,6 @@ class _AddFuelRecordPageState extends State<AddFuelRecordPage> {
   final _pricePerLiterController = TextEditingController();
   final _totalCostController = TextEditingController();
   final _gasStationController = TextEditingController();
-  final _notesController = TextEditingController();
 
   late Box<Vehicle> vehiclesBox;
   late Box<FuelRecord> fuelRecordsBox;
@@ -75,7 +74,6 @@ class _AddFuelRecordPageState extends State<AddFuelRecordPage> {
     _pricePerLiterController.dispose();
     _totalCostController.dispose();
     _gasStationController.dispose();
-    _notesController.dispose();
     super.dispose();
   }
 
@@ -217,15 +215,6 @@ class _AddFuelRecordPageState extends State<AddFuelRecordPage> {
                 label: AppStrings.gasStation + ' (opcional)',
                 hint: 'Ex: Posto Shell',
                 icon: Icons.place,
-              ),
-              SizedBox(height: AppDimensions.spacingMedium),
-
-              _buildTextField(
-                controller: _notesController,
-                label: AppStrings.notes + ' (opcional)',
-                hint: 'Observações adicionais',
-                icon: Icons.note,
-                maxLines: 3,
               ),
 
               SizedBox(height: AppDimensions.spacingLarge * 2),
@@ -542,7 +531,6 @@ class _AddFuelRecordPageState extends State<AddFuelRecordPage> {
         fuelType: _selectedFuelType,
         isFullTank: _isFullTank,
         gasStationName: _gasStationController.text.isEmpty ? null : _gasStationController.text,
-        notes: _notesController.text.isEmpty ? null : _notesController.text,
       );
 
       await fuelRecordsBox.add(fuelRecord);

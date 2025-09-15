@@ -6,27 +6,27 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._(); // Previne instanciação
 
-  // Cores principais (tema combustível/economia)
-  static const Color primary = Color(0xFF2E7D32); // Verde economia
-  static const Color secondary = Color(0xFF1565C0); // Azul confiança
-  static const Color accent = Color(0xFFFF8F00); // Laranja ação
+  // Cores principais (tema combustível/economia) - iOS-like
+  static const Color primary = Color(0xFF30D158); // Verde iOS moderno
+  static const Color secondary = Color(0xFF007AFF); // Azul iOS
+  static const Color accent = Color(0xFFFF9F0A); // Laranja iOS
 
-  // Cores de sistema
-  static const Color success = Color(0xFF4CAF50);
-  static const Color warning = Color(0xFFFF9800);
-  static const Color error = Color(0xFFF44336);
-  static const Color info = Color(0xFF2196F3);
+  // Cores de sistema - iOS-like
+  static const Color success = Color(0xFF30D158); // Verde iOS
+  static const Color warning = Color(0xFFFF9F0A); // Laranja iOS
+  static const Color error = Color(0xFFFF453A); // Vermelho iOS
+  static const Color info = Color(0xFF007AFF); // Azul iOS
 
   // Cores específicas do app de combustível
-  static const Color gasolina = Color(0xFFE53935);
-  static const Color etanol = Color(0xFF43A047);
-  static const Color diesel = Color(0xFF424242);
-  static const Color gnv = Color(0xFF1E88E5);
+  static const Color gasolina = Color(0xFFFF453A); // Vermelho iOS
+  static const Color etanol = Color(0xFF30D158); // Verde iOS
+  static const Color diesel = Color(0xFF8E8E93); // Cinza iOS
+  static const Color gnv = Color(0xFF007AFF); // Azul iOS
 
   // Cores de economia/performance
-  static const Color economyGood = Color(0xFF4CAF50);
-  static const Color economyBad = Color(0xFFF44336);
-  static const Color economyNeutral = Color(0xFF757575);
+  static const Color economyGood = Color(0xFF30D158); // Verde iOS
+  static const Color economyBad = Color(0xFFFF453A); // Vermelho iOS
+  static const Color economyNeutral = Color(0xFF8E8E93); // Cinza iOS
 
   // Cores neutras - Light Theme
   static const Color backgroundLight = Color(0xFFF5F5F5);
@@ -54,16 +54,16 @@ class AppColors {
   static const Color chart5 = Color(0xFF7B1FA2);
 
   // Cores para status de manutenção
-  static const Color maintenanceOverdue = Color(0xFFD32F2F);
-  static const Color maintenanceDueSoon = Color(0xFFFF9800);
-  static const Color maintenanceGood = Color(0xFF4CAF50);
+  static const Color maintenanceOverdue = Color(0xFFFF453A); // Vermelho iOS
+  static const Color maintenanceDueSoon = Color(0xFFFF9F0A); // Laranja iOS
+  static const Color maintenanceGood = Color(0xFF30D158); // Verde iOS
 
   // Cores para eficiência
-  static const Color efficiencyExcellent = Color(0xFF2E7D32);
-  static const Color efficiencyGood = Color(0xFF4CAF50);
-  static const Color efficiencyAverage = Color(0xFFFF9800);
-  static const Color efficiencyPoor = Color(0xFFE64A19);
-  static const Color efficiencyBad = Color(0xFFD32F2F);
+  static const Color efficiencyExcellent = Color(0xFF30D158); // Verde iOS
+  static const Color efficiencyGood = Color(0xFF32D74B); // Verde iOS claro
+  static const Color efficiencyAverage = Color(0xFFFF9F0A); // Laranja iOS
+  static const Color efficiencyPoor = Color(0xFFFF6B35); // Laranja-vermelho iOS
+  static const Color efficiencyBad = Color(0xFFFF453A); // Vermelho iOS
 
   // Método helper para obter cor do tipo de combustível
   static Color getFuelTypeColor(String fuelType) {

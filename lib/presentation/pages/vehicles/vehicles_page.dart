@@ -6,6 +6,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../data/models/vehicle_model.dart';
+import '../../widgets/states/empty_state.dart';
 
 class VehiclesPage extends StatefulWidget {
   const VehiclesPage({Key? key}) : super(key: key);
@@ -91,43 +92,13 @@ class _VehiclesPageState extends State<VehiclesPage> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(AppDimensions.paddingLarge),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.directions_car_outlined,
-              size: 80,
-              color: AppColors.textSecondary,
-            ),
-            SizedBox(height: AppDimensions.spacingLarge),
-            Text(
-              AppStrings.noVehicles,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            SizedBox(height: AppDimensions.spacingSmall),
-            Text(
-              AppStrings.addFirstVehicle,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.textSecondary,
-              ),
-            ),
-            SizedBox(height: AppDimensions.spacingLarge),
-            ElevatedButton.icon(
-              onPressed: () => context.push(AppRoutes.addVehicle),
-              icon: Icon(Icons.add),
-              label: Text(AppStrings.addVehicle),
-            ),
-          ],
-        ),
-      ),
+    return EmptyState(
+      icon: Icons.directions_car_outlined,
+      title: AppStrings.noVehicles,
+      subtitle: AppStrings.addFirstVehicle,
+      buttonText: AppStrings.addVehicle,
+      onButtonPressed: () => context.push(AppRoutes.addVehicle),
+      iconColor: AppColors.primary,
     );
   }
 
