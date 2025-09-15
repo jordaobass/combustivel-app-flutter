@@ -1,0 +1,66 @@
+name: combustivel_app
+description: App Monitor de Combustível - Controle completo de gastos com combustível
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
+
+  # Navigation
+  go_router: ^14.2.0
+
+  # Network (se necessário no futuro)
+  dio: ^5.5.0
+  connectivity_plus: ^6.0.3
+
+  # Local Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  flutter_secure_storage: ^9.2.2
+
+  # UI
+  flutter_screenutil: ^5.9.3
+  cached_network_image: ^3.3.1
+
+  # Utils
+  uuid: ^4.4.0
+  intl: ^0.19.0
+
+  # Camera e GPS para app de combustível (removido temporariamente)
+  # image_picker: ^1.0.7
+  # camera: ^0.10.5+9
+  # geolocator: ^10.1.0
+  # permission_handler: ^11.3.0
+
+  # Charts para análises
+  fl_chart: ^0.66.0
+
+  # ML Kit para OCR (removido temporariamente devido a problemas de compatibilidade)
+  # google_ml_kit: ^0.16.3
+
+  # Icons
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.11
+  hive_generator: ^2.0.1
+
+flutter:
+  uses-material-design: true
+
+  # assets:
+    # - assets/images/
+    # - assets/icons/
+    # - assets/sounds/
