@@ -187,7 +187,11 @@ class FuelAppLogoPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    if (oldDelegate is! FuelAppLogoPainter) return true;
+    return primaryColor != oldDelegate.primaryColor ||
+           accentColor != oldDelegate.accentColor;
+  }
 }
 
 // Widget para usar como ícone pequeno

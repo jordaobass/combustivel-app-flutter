@@ -12,6 +12,33 @@ import '../../widgets/cards/info_card.dart';
 import '../../widgets/states/empty_state.dart';
 import '../../../core/widgets/app_logo.dart';
 
+/// Cache para métricas do dashboard para evitar recálculos desnecessários
+class DashboardMetrics {
+  final double monthlySpent;
+  final double totalSpent;
+  final double avgPrice;
+  final double monthlyConsumption;
+  final DateTime calculatedAt;
+  final String vehicleFilter; // ID do veículo ou 'all'
+
+  const DashboardMetrics({
+    required this.monthlySpent,
+    required this.totalSpent,
+    required this.avgPrice,
+    required this.monthlyConsumption,
+    required this.calculatedAt,
+    required this.vehicleFilter,
+  });
+
+  /// Cache válido por 30 segundos
+  bool get isValid =>
+    DateTime.now().difference(calculatedAt).inSeconds < 30;
+
+  /// Verifica se o cache é válido para o filtro atual
+  bool isValidFor(String? currentVehicleFilter) =>
+    isValid && vehicleFilter == (currentVehicleFilter ?? 'all');
+}
+
 class DashboardPage extends StatefulWidget {
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -21,6 +48,7 @@ class _DashboardPageState extends State<DashboardPage> {
   late Box<Vehicle> vehiclesBox;
   late Box<FuelRecord> fuelRecordsBox;
   String? selectedVehicleId;
+  DashboardMetrics? _cachedMetrics;
 
   @override
   void initState() {
@@ -191,7 +219,10 @@ class _DashboardPageState extends State<DashboardPage> {
     return RefreshIndicator(
       color: AppColors.primary,
       onRefresh: () async {
-        setState(() {});
+        // Invalidar cache para forçar recálculo
+        _cachedMetrics = null;
+        // Pequeno delay para feedback visual
+        await Future.delayed(Duration(milliseconds: 300));
       },
       child: SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
@@ -210,34 +241,9 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildMetricsSection(List<FuelRecord> records) {
+    // Usar cache se válido, senão calcular
+    final metrics = _getOrCalculateMetrics(records);
     final now = DateTime.now();
-    final currentMonth = DateTime(now.year, now.month, 1);
-
-    // Gasto do mês atual
-    final monthlyRecords = records.where((record) =>
-      record.date.isAfter(currentMonth.subtract(Duration(days: 1)))).toList();
-    final monthlySpent = monthlyRecords.fold<double>(0, (sum, record) => sum + record.totalCost);
-
-    // Gasto total
-    final totalSpent = records.fold<double>(0, (sum, record) => sum + record.totalCost);
-    final totalLiters = records.fold<double>(0, (sum, record) => sum + record.liters);
-    final avgPrice = totalLiters > 0 ? totalSpent / totalLiters : 0.0;
-
-    // Calcular consumo médio do mês
-    double monthlyConsumption = 0;
-    int consumptionCount = 0;
-    for (int i = 1; i < monthlyRecords.length; i++) {
-      if (monthlyRecords[i].vehicleId == monthlyRecords[i-1].vehicleId && monthlyRecords[i].isFullTank) {
-        final consumption = monthlyRecords[i].calculateConsumption(monthlyRecords[i-1].odometer);
-        if (consumption != null) {
-          monthlyConsumption += consumption;
-          consumptionCount++;
-        }
-      }
-    }
-    if (consumptionCount > 0) {
-      monthlyConsumption = monthlyConsumption / consumptionCount;
-    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -290,21 +296,13 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               SizedBox(height: AppDimensions.spacingSmall),
               Text(
-                '${AppStrings.currency} ${monthlySpent.toStringAsFixed(2)}',
+                '${AppStrings.currency} ${metrics.monthlySpent.toStringAsFixed(2)}',
                 style: TextStyle(
                   color: AppColors.white,
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              if (monthlyRecords.isNotEmpty)
-                Text(
-                  '${monthlyRecords.length} abastecimentos',
-                  style: TextStyle(
-                    color: AppColors.white.withValues(alpha: 0.8),
-                    fontSize: 14,
-                  ),
-                ),
             ],
           ),
         ),
@@ -316,8 +314,8 @@ class _DashboardPageState extends State<DashboardPage> {
           children: [
             Expanded(child: _buildMetricCard(
               'Consumo Médio',
-              monthlyConsumption > 0
-                ? '${monthlyConsumption.toStringAsFixed(1)} km/L'
+              metrics.monthlyConsumption > 0
+                ? '${metrics.monthlyConsumption.toStringAsFixed(1)} km/L'
                 : 'N/A',
               AppColors.info,
               Icons.speed,
@@ -325,7 +323,7 @@ class _DashboardPageState extends State<DashboardPage> {
             SizedBox(width: AppDimensions.spacingSmall),
             Expanded(child: _buildMetricCard(
               'Preço Médio',
-              '${AppStrings.currency} ${avgPrice.toStringAsFixed(3)}/L',
+              '${AppStrings.currency} ${metrics.avgPrice.toStringAsFixed(3)}/L',
               AppColors.success,
               Icons.trending_up,
             )),
@@ -639,5 +637,64 @@ class _DashboardPageState extends State<DashboardPage> {
         ],
       ),
     );
+  }
+
+  /// Obtém métricas do cache ou calcula novas se necessário
+  DashboardMetrics _getOrCalculateMetrics(List<FuelRecord> records) {
+    final currentFilter = selectedVehicleId ?? 'all';
+
+    // Usar cache se válido
+    if (_cachedMetrics?.isValidFor(currentFilter) ?? false) {
+      return _cachedMetrics!;
+    }
+
+    // Calcular novas métricas
+    final now = DateTime.now();
+    final currentMonth = DateTime(now.year, now.month, 1);
+
+    // Filtros otimizados - calcular apenas uma vez
+    final monthlyRecords = records.where((record) =>
+      record.date.isAfter(currentMonth.subtract(Duration(days: 1)))).toList();
+
+    final monthlySpent = monthlyRecords.fold<double>(0, (sum, record) => sum + record.totalCost);
+    final totalSpent = records.fold<double>(0, (sum, record) => sum + record.totalCost);
+    final totalLiters = records.fold<double>(0, (sum, record) => sum + record.liters);
+    final avgPrice = totalLiters > 0 ? totalSpent / totalLiters : 0.0;
+
+    // Cálculo de consumo otimizado
+    double monthlyConsumption = 0;
+    int consumptionCount = 0;
+
+    // Ordenar uma vez e reutilizar
+    monthlyRecords.sort((a, b) => a.date.compareTo(b.date));
+
+    for (int i = 1; i < monthlyRecords.length; i++) {
+      final current = monthlyRecords[i];
+      final previous = monthlyRecords[i-1];
+
+      if (current.vehicleId == previous.vehicleId && current.isFullTank) {
+        final consumption = current.calculateConsumption(previous.odometer);
+        if (consumption != null && consumption > 0) {
+          monthlyConsumption += consumption;
+          consumptionCount++;
+        }
+      }
+    }
+
+    if (consumptionCount > 0) {
+      monthlyConsumption = monthlyConsumption / consumptionCount;
+    }
+
+    // Criar e cachear métricas
+    _cachedMetrics = DashboardMetrics(
+      monthlySpent: monthlySpent,
+      totalSpent: totalSpent,
+      avgPrice: avgPrice,
+      monthlyConsumption: monthlyConsumption,
+      calculatedAt: DateTime.now(),
+      vehicleFilter: currentFilter,
+    );
+
+    return _cachedMetrics!;
   }
 }

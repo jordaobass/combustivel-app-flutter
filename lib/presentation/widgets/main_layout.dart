@@ -84,8 +84,9 @@ class _MainLayoutState extends State<MainLayout> {
 
   Widget _buildGlassBottomBar() {
     return ClipRRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+      child: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           height: 90 + MediaQuery.of(context).padding.bottom,
           decoration: BoxDecoration(
@@ -159,6 +160,7 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ),
           ),
+        ),
         ),
       ),
     );
